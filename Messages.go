@@ -1,12 +1,13 @@
 package multi_threading
 
 import (
+	"bytes"
 	"container/heap"
 	"fmt"
 	"sync"
 )
 
-type bytevector []byte
+//type bytevector []byte
 
 type messageArgType int
 
@@ -37,22 +38,22 @@ type messageArg struct {
 	//        IntType='A', Int64Type, StringType, VectorIntType, EOFType
 	//    };
 	MessageType messageArgType //look up name
-	Body        bytevector
+	Body        bytes.Buffer   //bytevector
 }
 
 type Message struct {
 	SendTime, DeliveryTime int64
-	From, To, Ptr          int // from = -1, to = -1, ptr = 0
-	Body                   bytevector
+	From, To, Ptr          int          // from = -1, to = -1, ptr = 0
+	Body                   bytes.Buffer //bytevector
 }
 
-func MakeMessageFromArg(mArgs ...messageArg) Message        {}
-func MakeMessage(from int, to int, body bytevector) Message {}
-func (Message) GetString() string                           { return "" }
-func (Message) GetInt() int                                 { return 0 }
-func (Message) GetInt64() int64                             { return 0 }
-func (Message) More(oth Message) bool                       { return false }
-func (Message) append(a messageArg)                         {}
+func MakeMessageFromArg(mArgs ...messageArg) Message          {}
+func MakeMessage(from int, to int, body bytes.Buffer) Message {}
+func (Message) GetString() string                             { return "" }
+func (Message) GetInt() int                                   { return 0 }
+func (Message) GetInt64() int64                               { return 0 }
+func (Message) More(oth Message) bool                         { return false }
+func (Message) append(a messageArg)                           {}
 
 type priority_queue smth
 type MessageQueue struct {
