@@ -2,7 +2,7 @@ package multi_threading
 
 import (
 	"bytes"
-	"container/heap"
+	"encoding/binary"
 	"fmt"
 	"sync"
 )
@@ -12,7 +12,8 @@ import (
 type messageArgType int
 
 const (
-	intType messageArgType = iota
+	_ messageArgType = iota
+	intType
 	int64Type
 	stringType
 	vectorIntType
@@ -39,6 +40,21 @@ type messageArg struct {
 	//    };
 	MessageType messageArgType //look up name
 	Body        bytes.Buffer   //bytevector
+}
+
+func makeMessageArg(q interface{}) (newMA messageArg) {
+	order := binary.BigEndian
+	body := &newMA.Body
+	if pq, ok := q.(int16); ok {
+		newMA.MessageType = intType
+		err := binary.Write(body, order, pq)
+		if err != nil {
+			fmt.Errorf("makeMessageArg: binary.Write failed: %v", err)
+		}
+	} else {
+		fmt.Errorf("makeMessageArg: unknown arg type")
+	}
+	return newMA
 }
 
 type Message struct {
