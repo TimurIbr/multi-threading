@@ -2,6 +2,7 @@ package multi_threading
 
 import (
 	"container/heap"
+	"fmt"
 	"sync"
 )
 
@@ -44,6 +45,15 @@ type Message struct {
 	From, To, Ptr          int // from = -1, to = -1, ptr = 0
 	Body                   bytevector
 }
+
+func MakeMessageFromArg(mArgs ...messageArg) Message        {}
+func MakeMessage(from int, to int, body bytevector) Message {}
+func (Message) GetString() string                           { return "" }
+func (Message) GetInt() int                                 { return 0 }
+func (Message) GetInt64() int64                             { return 0 }
+func (Message) More(oth Message) bool                       { return false }
+func (Message) append(a messageArg)                         {}
+
 type priority_queue smth
 type MessageQueue struct {
 	//TODO(low) implement priority_queue throught heap see more https://golang.org/pkg/container/heap/
