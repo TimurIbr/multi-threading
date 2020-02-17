@@ -13,7 +13,7 @@ type messageArgType int
 
 const (
 	_ messageArgType = iota
-	intType
+	int16Type
 	int64Type
 	stringType
 	vectorIntType
@@ -22,7 +22,8 @@ const (
 
 func (mtype messageArgType) String() string {
 	names := [...]string{
-		"intType",
+		"Unknown",
+		"int16Type",
 		"int64Type",
 		"stringType",
 		"vectorIntType",
