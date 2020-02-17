@@ -4,12 +4,23 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"io"
+	"log"
 	"sync"
 )
 
 //type bytevector []byte
 
 type messageArgType int
+
+func (mAT messageArgType) Read(p []byte) (n int, err error) {
+	Count += 1
+	if Count > 10 {
+		log.Panic(Count)
+	}
+	p[0] = byte(mAT)
+	return 1, io.EOF ////////////////////
+}
 
 const (
 	_ messageArgType = iota
@@ -110,7 +121,14 @@ func (Message) GetString() string                             { return "" }
 func (Message) GetInt() int                                   { return 0 }
 func (Message) GetInt64() int64                               { return 0 }
 func (Message) More(oth Message) bool                         { return false }
-func (Message) append(a messageArg)                           {}
+func (ms *Message) append(a messageArg) {
+	if _, err := ms.Body.ReadFrom(a.MessageType); err != nil {
+		fmt.Errorf("message.append: failed to read from a.MessageType %v", err)
+	}
+	if _, err := ms.Body.ReadFrom(&a.Body); err != nil {
+		fmt.Errorf("message.append: failed to read from &a.Body %v", err)
+	}
+}
 
 type priority_queue smth
 type MessageQueue struct {
