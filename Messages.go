@@ -29,7 +29,7 @@ func (mtype messageArgType) String() string {
 		"vectorIntType",
 		"eofType",
 	}
-	if mtype < intType || mtype > eofType {
+	if mtype < int16Type || mtype > eofType {
 		return "Unknown"
 	}
 	return names[mtype]
@@ -46,14 +46,15 @@ type messageArg struct {
 func makeMessageArg(q interface{}) (newMA messageArg) {
 	order := binary.BigEndian
 	body := &newMA.Body
-	if pq, ok := q.(int16); ok {
-		newMA.MessageType = intType
+	switch pq := q.(type) {
+	default:
+		fmt.Errorf("makeMessageArg: unknown arg type %T", pq)
+	case int16:
+		newMA.MessageType = int16Type
 		err := binary.Write(body, order, pq)
 		if err != nil {
 			fmt.Errorf("makeMessageArg: binary.Write failed: %v", err)
 		}
-	} else {
-		fmt.Errorf("makeMessageArg: unknown arg type")
 	}
 	return newMA
 }
