@@ -55,6 +55,19 @@ func makeMessageArg(q interface{}) (newMA messageArg) {
 		if err != nil {
 			fmt.Errorf("makeMessageArg: binary.Write failed: %v", err)
 		}
+	case int64:
+		newMA.MessageType = int64Type
+		err := binary.Write(body, order, pq)
+		if err != nil {
+			fmt.Errorf("makeMessageArg: binary.Write failed: %v", err)
+		}
+	case int:
+		tmpq := int64(pq)
+		newMA.MessageType = int64Type
+		err := binary.Write(body, order, tmpq)
+		if err != nil {
+			fmt.Errorf("makeMessageArg: binary.Write failed: %v", err)
+		}
 	}
 	return newMA
 }
