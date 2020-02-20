@@ -118,9 +118,11 @@ func MakeMessageFromArg(mArgs ...messageArg) Message {
 	}
 	return ms
 }
-func MakeMessage(from int, to int, body bytes.Buffer) Message {}
-func (ms Message) GetString() string                          { return "" }
-func (ms Message) GetInt() int                                { return 0 }
+func MakeMessage(from int, to int, body bytes.Buffer) Message {
+	return Message{From: from, To: to, Body: body}
+}
+func (ms Message) GetString() string { return "" }
+func (ms Message) GetInt() int       { return 0 }
 func (ms Message) GetInt64() int64 {
 	return 0
 }
