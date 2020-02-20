@@ -135,10 +135,42 @@ func MakeMessageFromArg(mArgs ...messageArg) Message {
 func MakeMessage(from int, to int, body bytes.Buffer) Message {
 	return Message{From: from, To: to, Body: body}
 }
-func (ms Message) GetString() string { return "" }
-func (ms Message) GetInt() int       { return 0 }
-func (ms Message) GetInt64() int64 {
+func (ms *Message) GetString() (ret string) {
+	if (ms.Ptr < ms.Body.Len()) && (messageArgType(ms.Body.Bytes()[ms.Ptr]) == stringType) {
+		ms.Ptr += ms.Body.Len()
+		ms.Body.ReadByte()
+		ret = ms.Body.String()
+		ms.Body.UnreadByte()
+		return ret
+	}
+	return ""
+}
+func (ms *Message) GetInt16() (ret int16) {
+	fmt.Println(messageArgType(ms.Body.Bytes()[ms.Ptr]))
+	if (ms.Ptr+2 < ms.Body.Len()) && (messageArgType(ms.Body.Bytes()[ms.Ptr]) == int16Type) {
+		for i, val := range ms.Body.Bytes()[1:] {
+			ret |= int16(val) << uint16(i*8)
+		}
+		ms.Ptr += ms.Body.Len()
+		return ret
+	}
+
 	return 0
+}
+func (ms *Message) GetInt64() (ret int64) {
+	fmt.Println(messageArgType(ms.Body.Bytes()[ms.Ptr]))
+	if (ms.Ptr+8 < ms.Body.Len()) && (messageArgType(ms.Body.Bytes()[ms.Ptr]) == int64Type) {
+		for i, val := range ms.Body.Bytes()[1:] {
+			ret |= int64(val) << uint64(i*8)
+		}
+		ms.Ptr += ms.Body.Len()
+		return ret
+	}
+
+	return 0
+}
+func (ms *Message) GetInt() (ret int) {
+	return int(ms.GetInt64())
 }
 func (ms Message) More(oth Message) bool {
 	return ms.DeliveryTime > oth.DeliveryTime
