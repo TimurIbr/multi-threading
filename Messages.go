@@ -116,6 +116,10 @@ func MakeMessageFromArg(mArgs ...messageArg) Message {
 	for _, arg := range mArgs {
 		ms.append(arg)
 	}
+	ms.From = -1
+	ms.To = -1
+	ms.Ptr = 0
+	ms.DeliveryTime = 0
 	return ms
 }
 func MakeMessage(from int, to int, body bytes.Buffer) Message {
