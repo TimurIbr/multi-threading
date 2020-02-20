@@ -52,19 +52,22 @@ type messageArg struct {
 
 func makeMessageArg(q interface{}) (newMA messageArg) {
 	order := binary.BigEndian
-	body := &newMA.Body
+	//body := &newMA.Body
+	body := new(bytes.Buffer)
 	switch pq := q.(type) {
 	default:
 		fmt.Errorf("makeMessageArg: unknown arg type %T", pq)
 	case int16:
+		tmpq := pq
 		newMA.MessageType = int16Type
-		err := binary.Write(body, order, pq)
+		err := binary.Write(body, order, tmpq)
 		if err != nil {
 			fmt.Errorf("makeMessageArg: binary.Write failed: %v", err)
 		}
 	case int64:
+		tmpq := pq
 		newMA.MessageType = int64Type
-		err := binary.Write(body, order, pq)
+		err := binary.Write(body, order, tmpq)
 		if err != nil {
 			fmt.Errorf("makeMessageArg: binary.Write failed: %v", err)
 		}
@@ -86,8 +89,9 @@ func makeMessageArg(q interface{}) (newMA messageArg) {
 			fmt.Errorf("makeMessageArg: binary.Write failed: %v", err)
 		}
 	case []int64:
+		tmpq := pq
 		newMA.MessageType = vectorIntType
-		err := binary.Write(body, order, pq)
+		err := binary.Write(body, order, tmpq)
 		if err != nil {
 			fmt.Errorf("makeMessageArg: binary.Write failed: %v", err)
 		}
@@ -101,6 +105,12 @@ func makeMessageArg(q interface{}) (newMA messageArg) {
 		if err != nil {
 			fmt.Errorf("makeMessageArg: binary.Write failed: %v", err)
 		}
+	}
+	if _, err := newMA.Body.ReadFrom(newMA.MessageType); err != nil {
+		fmt.Errorf("makeMessageArg: newMA.Body.ReadFrom failed: %v", err)
+	}
+	if err := binary.Write(&newMA.Body, order, body.Bytes()); err != nil {
+		fmt.Errorf("makeMessageArg: binary.Write failed: %v", err)
 	}
 	return newMA
 }
