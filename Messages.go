@@ -144,9 +144,6 @@ func (ms Message) More(oth Message) bool {
 	return ms.DeliveryTime > oth.DeliveryTime
 }
 func (ms *Message) append(a messageArg) {
-	if _, err := ms.Body.ReadFrom(a.MessageType); err != nil {
-		fmt.Errorf("message.append: failed to read from a.MessageType %v", err)
-	}
 	if _, err := ms.Body.ReadFrom(&a.Body); err != nil {
 		fmt.Errorf("message.append: failed to read from &a.Body %v", err)
 	}
