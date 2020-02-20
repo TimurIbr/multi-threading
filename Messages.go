@@ -51,7 +51,7 @@ type messageArg struct {
 }
 
 func makeMessageArg(q interface{}) (newMA messageArg) {
-	order := binary.BigEndian
+	order := binary.LittleEndian
 	//body := &newMA.Body
 	body := new(bytes.Buffer)
 	switch pq := q.(type) {
