@@ -14,10 +14,6 @@ import (
 type messageArgType int
 
 func (mAT messageArgType) Read(p []byte) (n int, err error) {
-	Count += 1
-	if Count > 10 {
-		log.Panic(Count)
-	}
 	p[0] = byte(mAT)
 	return 1, io.EOF ////////////////////
 }
@@ -115,12 +111,21 @@ type Message struct {
 	Body                   bytes.Buffer //bytevector
 }
 
-func MakeMessageFromArg(mArgs ...messageArg) Message          {}
+func MakeMessageFromArg(mArgs ...messageArg) Message {
+	ms := Message{}
+	for _, arg := range mArgs {
+		ms.append(arg)
+	}
+}
 func MakeMessage(from int, to int, body bytes.Buffer) Message {}
-func (Message) GetString() string                             { return "" }
-func (Message) GetInt() int                                   { return 0 }
-func (Message) GetInt64() int64                               { return 0 }
-func (Message) More(oth Message) bool                         { return false }
+func (ms Message) GetString() string                          { return "" }
+func (ms Message) GetInt() int                                { return 0 }
+func (ms Message) GetInt64() int64 {
+	return 0
+}
+func (ms Message) More(oth Message) bool {
+	return ms.DeliveryTime > oth.DeliveryTime
+}
 func (ms *Message) append(a messageArg) {
 	if _, err := ms.Body.ReadFrom(a.MessageType); err != nil {
 		fmt.Errorf("message.append: failed to read from a.MessageType %v", err)
